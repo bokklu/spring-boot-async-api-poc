@@ -1,0 +1,30 @@
+version: "3.9"
+
+services:
+
+    conference-db:
+        container_name: conference-db
+        image: postgres:14-alpine
+        environment:
+            - POSTGRES_DB=conference_db
+            - POSTGRES_USER=postgres
+            - POSTGRES_PASSWORD=123
+        ports:
+            - "5432:5432"
+        volumes:
+            - ./scripts:/docker-entrypoint-initdb.d
+            - postgres-data:/var/lib/postgresql/data
+        restart: unless-stopped
+
+    conference-api:
+        container_name: conference-api
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        ports:
+            - "8080:8080"
+        depends_on:
+            - "conference-db"
+
+volumes:
+    postgres-data:
